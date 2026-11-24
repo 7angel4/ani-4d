@@ -130,7 +130,11 @@ p { margin: 0; }
 .thesis { font-family: var(--display); font-weight: 500; font-size: clamp(1.35rem, 2.6vw, 2rem); line-height: 1.2;
   letter-spacing: -0.015em; margin-top: 1.1rem; max-width: 36ch; text-wrap: balance; }
 .authors { margin-top: 1rem; color: var(--muted); font-size: .98rem; }
-.authors b { color: var(--ink); font-weight: 600; }
+.authors b { color: var(--ink); font-weight: 600; white-space: nowrap; }
+.authors .sep { margin-inline: .5em; color: var(--faint); }
+.affil { margin-top: .3rem; color: var(--muted); font-size: .92rem; }
+.contact { margin-top: .25rem; font-family: var(--mono); font-size: .8rem; color: var(--muted); }
+.contact a { color: inherit; text-decoration-color: var(--faint); }
 .links { display: flex; flex-wrap: wrap; gap: .55rem; margin-top: 1.5rem; }
 .btn { display: inline-flex; align-items: center; gap: .45rem; padding: .55rem .95rem; border-radius: 999px; font-size: .92rem;
   font-weight: 600; text-decoration: none; border: 1px solid var(--rule); background: var(--panel); color: var(--ink);
@@ -457,7 +461,9 @@ footer p + p { margin-top: .4rem; }
     <span class="eyebrow"><span class="ticks" aria-hidden="true"><i></i><i></i><i></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>Preprint</span>
     <h1 class="wordmark rig" id="wordmark"><span class="vis-hidden">Ani4D</span><span aria-hidden="true"><svg class="wm-a" viewBox="0 0 100 104" aria-hidden="true"><g stroke="var(--bone)" stroke-width="16" stroke-linecap="round" fill="none"><path class="b b1" pathLength="1" d="M50 12.5 27.2 60.2"/><path class="b b1" pathLength="1" d="M50 12.5 72.8 60.2"/><path class="b b2" pathLength="1" d="M27.2 60.2 12 92"/><path class="b b2" pathLength="1" d="M72.8 60.2 88 92"/><path class="b b2" pathLength="1" d="M27.2 60.2H72.8"/></g><circle class="j j0" cx="50" cy="12.5" r="12" fill="var(--root)"/><circle class="j j1" cx="27.2" cy="60.2" r="10.5" fill="var(--joint)"/><circle class="j j1" cx="72.8" cy="60.2" r="10.5" fill="var(--joint)"/><circle class="j j2" cx="12" cy="92" r="10.5" fill="var(--joint)"/><circle class="j j2" cx="88" cy="92" r="10.5" fill="var(--joint)"/></svg>n<span class="wm-i">ı<svg class="wm-ball" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="50" fill="#fff"/><path d="M0 50a50 50 0 0 1 100 0z" fill="var(--joint)"/><path d="M.2 45.5h99.6a50 50 0 0 1 0 9H.2a50 50 0 0 1 0-9z" fill="var(--ball-ink)"/><circle cx="50" cy="50" r="47.5" fill="none" stroke="var(--ball-ol)" stroke-width="5"/><circle cx="50" cy="50" r="18" fill="var(--ball-ink)"/><circle cx="50" cy="50" r="11.5" fill="#fff"/></svg></span><span class="d4">4D</span></span></h1>
     <p class="thesis">Animatable 4D Mesh Reconstruction from Monocular Video</p>
-    <p class="authors"><b>Angel Y. He</b> &middot; <b>Andrea Vedaldi</b> &middot; <b>Zeren Jiang</b><br>Visual Geometry Group, University of Oxford</p>
+    <p class="authors"><b>Angel Y. He</b><span class="sep"><span class="vis-hidden">, </span><span aria-hidden="true">&middot;</span></span><wbr><b>Andrea Vedaldi</b><span class="sep"><span class="vis-hidden">, </span><span aria-hidden="true">&middot;</span></span><wbr><b>Zeren Jiang</b></p>
+    <p class="affil">Visual Geometry Group, Department of Engineering Science, University of Oxford</p>
+    <p class="contact">{<a href="mailto:angelyhe@robots.ox.ac.uk">angelyhe</a>, <a href="mailto:vedaldi@robots.ox.ac.uk">vedaldi</a>, <a href="mailto:zeren@robots.ox.ac.uk">zeren</a>}@robots.ox.ac.uk</p>
     <div class="links">
       <a class="btn primary" href="#results">See the results</a>
       <span class="btn" aria-disabled="true">Paper <span class="soon">soon</span></span>
