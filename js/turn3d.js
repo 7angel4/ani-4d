@@ -119,6 +119,9 @@ function frameCamera(P, az, el, margin = 0.07) {     // vidlib.frame_camera: tar
   return { c, d: need, fwd };
 }
 
+// the shading normals a Turn3D keeps per frame, at most this many megabytes (Turn3D.normals, 2026-11-25)
+const NORMALS_MB = 40;
+
 export class Turn3D {
   // home: the view a load and a double-click go to ("turn" = 55 degrees from the input camera, "focus" = opts.focus)
   constructor(canvas, { root = "media/3d/", onState = () => {}, home = "turn", focus = null, tone = null } = {}) {
@@ -374,7 +377,7 @@ export class Turn3D {
       const pos = p.geom.attributes.position;
       this.fill(pos.array, s.V[f], L.m.sub);
       pos.needsUpdate = true;
-      p.geom.computeVertexNormals();
+      this.normals(p, s, f);
       const col = p.geom.attributes.color;
       if (this.mode !== "err") col.array.set(L.m.col);
       else if (key === "gt" && g.two) {               // the ground truth on its own mesh: its zero, the pale colours
@@ -402,6 +405,37 @@ export class Turn3D {
         }
       }
     }
+  }
+
+  // a panel's shading normals at frame f (2026-11-25): each face's normal (the cross product of two edges, so larger
+  // faces weigh more) summed at its vertices and normalised, exactly as three.js's computeVertexNormals computes them
+  // (bit for bit), in plain typed arrays (~3x faster); each frame's are kept, up to NORMALS_MB, so a looping clip
+  // computes them once. On a slow computer these normals were most of the page's work while a clip played.
+  normals(p, s, f) {
+    const g = p.geom, P = g.attributes.position.array, I = g.index.array;
+    let na = g.attributes.normal;
+    if (!na) { na = new THREE.BufferAttribute(new Float32Array(P.length), 3); g.setAttribute("normal", na); }
+    const N = na.array;
+    let c = p.ncache;
+    if (!c || c.V !== s.V || c.n !== N.length) c = p.ncache = { V: s.V, n: N.length, f: [], bytes: 0 };
+    if (c.f[f]) { N.set(c.f[f]); na.needsUpdate = true; return; }
+    N.fill(0);
+    for (let i = 0; i < I.length; i += 3) {
+      const a = 3 * I[i], b = 3 * I[i + 1], q = 3 * I[i + 2];
+      const cbx = P[q] - P[b], cby = P[q + 1] - P[b + 1], cbz = P[q + 2] - P[b + 2];
+      const abx = P[a] - P[b], aby = P[a + 1] - P[b + 1], abz = P[a + 2] - P[b + 2];
+      const x = cby * abz - cbz * aby, y = cbz * abx - cbx * abz, z = cbx * aby - cby * abx;
+      N[a] += x; N[a + 1] += y; N[a + 2] += z;
+      N[b] += x; N[b + 1] += y; N[b + 2] += z;
+      N[q] += x; N[q + 1] += y; N[q + 2] += z;
+    }
+    for (let i = 0; i < N.length; i += 3) {
+      const x = N[i], y = N[i + 1], z = N[i + 2], k = 1 / (Math.sqrt(x * x + y * y + z * z) || 1);
+      N[i] = x * k; N[i + 1] = y * k; N[i + 2] = z * k;
+    }
+    na.needsUpdate = true;
+    const used = Object.values(this.panels).reduce((n, o) => n + (o.ncache ? o.ncache.bytes : 0), 0);
+    if (used + N.byteLength <= NORMALS_MB * 1048576) { c.f[f] = N.slice(); c.bytes += N.byteLength; }
   }
 
   setFrame(f) { if (f === this.frame) return; this.frame = f; this.update(); this.render(); }
